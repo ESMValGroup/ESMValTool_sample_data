@@ -1,0 +1,11 @@
+---
+name: esmvaltool_test_data
+channels:
+  - conda-forge
+
+dependencies:
+  - esgf-pyclient
+  - iris>=2.2.1
+  - myproxyclient
+  - python>=3.6
+  - xarray

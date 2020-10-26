@@ -1,0 +1,19 @@
+logon:
+  hostname: esgf-data.dkrz.de
+  username: cookiemonster
+  password: "1234"
+
+search_connection:
+  url: "https://esgf-data.dkrz.de/esg-search"
+  distrib: true
+  cache: "pyesgf-cache"
+
+preferred_hosts:
+  # Use nearby hosts
+  - esgf-data3.ceda.ac.uk
+  - esg-dn1.nsc.liu.se
+  - noresg.nird.sigma2.no
+  - esgf-node2.cmcc.it
+
+ignore_hosts:
+  - esgf3.dkrz.de

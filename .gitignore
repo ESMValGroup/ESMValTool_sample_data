@@ -1,0 +1,7 @@
+# ignore these files
+
+# esgf-pyclient cache
+*.sqlite
+
+# config file
+config.yml
