@@ -2,6 +2,8 @@ from pathlib import Path
 
 import cube_helper
 
+cube_helper.logger.muffle_logger()
+
 base_dir = Path(__file__).parent
 
 
@@ -51,3 +53,9 @@ def load_profile_data():
     """a 4D atmospheric variable, all dimensions reduced to a few steps except
     the horizontal dimension(s) same for an ocean variable."""
     raise NotImplementedError
+
+
+if __name__ == '__main__':
+    cube_helper.logger.reset_logger()
+    ts = load_timeseries_data()
+    breakpoint()
