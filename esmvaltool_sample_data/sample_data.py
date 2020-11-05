@@ -127,7 +127,7 @@ def save_sample(data_url, target):
         cube = iris.load_cube(data_url)
     print(cube)
     # select bottom two vertical levels
-    cube = cube[:10, :2]
+    cube = cube[:, :2]
     # select horizontal region
     try:
         latitude = iris.coords.CoordExtent('latitude', 88, 90)
