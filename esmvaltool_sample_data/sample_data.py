@@ -1,141 +1,194 @@
+import datetime
 import os
+import warnings
 from pathlib import Path
 
 import iris
-import xarray as xr
 import yaml
 from pyesgf.logon import LogonManager
 from pyesgf.search import SearchConnection
 
-IGNORE_FACET_CHECK = True
+
+def str2date(datestr):
+    formats = {
+        4: "%Y",
+        6: "%Y%m",
+        8: "%Y%m%d",
+    }
+    fmt = formats[len(datestr)]
+    return datetime.datetime.strptime(datestr, fmt)
 
 
-def logon(hostname, username, password):
-    lm = LogonManager()
-    if not lm.is_logged_on():
-        lm.logon(
-            hostname=hostname,
-            username=username,
-            password=password,
-            interactive=False,
-            bootstrap=True,
-        )
-    print("Logged", "on" if lm.is_logged_on() else "off")
+def get_time(filename):
+    """Read the start and end date from a string ending with e.g. 20010101-20011231.nc"""
+    start_date, end_date = Path(filename).stem[-17:].split('-')
+    return str2date(start_date), str2date(end_date)
 
 
-def search(connection, preferred_hosts, ignore_hosts, dataset):
-    print("Searching")
-    ctx = connection.new_context(**dataset)
-    print("Found", ctx.hit_count, "items")
+def select_by_time(filename, from_timestamp, to_timestamp):
+    """Select file if it contains data in the requested timerange."""
+    if from_timestamp is None and to_timestamp is None:
+        return True
+
+    start, end = get_time(filename)
+
+    if from_timestamp is not None:
+        from_date = datetime.datetime.fromisoformat(from_timestamp.rstrip('Z'))
+        if to_timestamp is None:
+            return end > from_date
+
+    if to_timestamp is not None:
+        to_date = datetime.datetime.fromisoformat(to_timestamp.rstrip('Z'))
+        if from_timestamp is None:
+            return start < to_date
+
+    return start < to_date and end > from_date
+
+
+def select_host(hosts, preferred_hosts, ignore_hosts):
+    """Select a suitable host from a list of hosts."""
+    # Not sure if this is reliable: sometimes no files are found on
+    # the selected host.
+    hosts = [h for h in hosts if h not in ignore_hosts]
+    if not hosts:
+        return None
+
+    for host in preferred_hosts:
+        if host in hosts:
+            return host
+
+    return hosts[0]
+
+
+def search(connection, preferred_hosts, ignore_hosts, facets):
+    print("Searching ...")
+    ctx = connection.new_context(**facets, latest=True)
+    print("Found", ctx.hit_count, "datasets (including copies)")
 
     # Find available datasets
     datasets = {}
-    for result in ctx.search(ignore_facet_check=IGNORE_FACET_CHECK):
-        dataset_name, host = result.dataset_id.split('|')
-        print("Found", dataset_name, "on", host)
+    for dataset in ctx.search():
+        dataset_name, host = dataset.dataset_id.split('|')
         if dataset_name not in datasets:
             datasets[dataset_name] = {}
-        datasets[dataset_name][host] = result
+        datasets[dataset_name][host] = dataset
+
+    print("Found", len(datasets), "unique datasets")
 
     # Select host and find files on host
     files = {}
-    for dataset_name, results in datasets.items():
+    for dataset_name in sorted(datasets):
+        copies = datasets[dataset_name]
         print(
-            "Finding files for dataset",
+            "\nFinding files for dataset",
             dataset_name,
             "available on hosts",
-            sorted(results.keys()),
+            sorted(copies.keys()),
         )
-        for host in preferred_hosts:
-            if host in results:
-                result = results[host]
-                break
-        else:
-            results = {
-                k: v
-                for k, v in results.items() if k not in ignore_hosts
-            }
-            if not results:
-                continue
-            host = next(iter(results))
-            result = results[host]
-        # Not sure if this is reliable: sometimes no files are found on the
-        # selected host.
+        host = select_host(copies.keys(), preferred_hosts, ignore_hosts)
+        dataset = copies[host]
+
         if dataset_name not in files:
             files[dataset_name] = []
-        for file in result.file_context().search(
-                variable=dataset['variable'],
-                ignore_facet_check=IGNORE_FACET_CHECK):
-            print(file.opendap_url)
-            files[dataset_name].append(file.opendap_url)
-        if not files[dataset_name]:
+        dataset_files = dataset.file_context().search(
+            variable=facets['variable'])
+        if not dataset_files:
             print("Warning: no files found for", dataset_name, "on", host)
+
+        for file in dataset_files:
+            select = select_by_time(
+                file.filename,
+                facets.get('from_timestamp'),
+                facets.get('to_timestamp'),
+            )
+            if select:
+                print(file.opendap_url)
+                files[dataset_name].append(file.opendap_url)
+        print(
+            "Found",
+            len(dataset_files),
+            "files, of which",
+            len(files[dataset_name]),
+            "were within requested time range",
+        )
+
     return files
 
 
-def save_xarray(data_url, target):
-
-    ds = xr.open_dataset(data_url, chunks={'time': 120})
-    print(ds)
-
-    ds = ds.isel(time=slice(0, 1))
-    ds = ds.sel(lat=slice(-50, 50), lon=slice(0, 50))
-
-    ds.to_netcdf(target)
-
-
-def save_iris(data_url, target):
+def save_sample(data_url, target):
     print("Saving sample of", data_url, "to", target)
-    cube = iris.load_cube(data_url)
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            'ignore',
+            message="Missing CF-netCDF measure variable .*",
+            category=UserWarning,
+            module='iris',
+        )
+        cube = iris.load_cube(data_url)
     print(cube)
-    cube = cube[:, :2, :2, :2]
+    # select bottom two vertical levels
+    cube = cube[:10, :2]
+    # select horizontal region
+    try:
+        latitude = iris.coords.CoordExtent('latitude', 88, 90)
+        cube = cube.intersection(latitude, ignore_bounds=True)
+    except (IndexError, iris.exceptions.CoordinateMultiDimError):
+        cube = cube[:, :, :2]
+    try:
+        longitude = iris.coords.CoordExtent('longitude', 0, 2)
+        cube = cube.intersection(longitude, ignore_bounds=True)
+    except (IndexError, iris.exceptions.CoordinateMultiDimError):
+        cube = cube[:, :, :, :2]
 
+    print("Shape of sample:", cube.shape)
     iris.save(cube, target=target)
 
 
-def save(dataset_name, files):
+def sample_files(plot_type, dataset_name, files):
     for filename in files:
-        dirpath = Path(__file__).parent / 'data' / 'timeseries' / dataset_name
+        dirpath = (Path(__file__).parent / 'data' / plot_type /
+                   dataset_name.replace('.', os.sep))
         dirpath.mkdir(parents=True, exist_ok=True)
-        target = dirpath / os.path.basename(filename)
+        target = dirpath / Path(filename).name
         if not target.exists():
-            save_iris(filename, target=str(target))
+            save_sample(filename, target=str(target))
 
 
-if __name__ == '__main__':
-
-    dataset_cmip5 = {
-        'variable': 'ta',
-        'project': 'CMIP5',
-        'experiment': 'historical',
-        #'model': 'MPI-ESM-LR',
-        'ensemble': 'r1i1p1',
-        'cmor_table': 'Amon',
-        'from_timestamp': "1850-01-01T00:00:00Z",
-        'to_timestamp': "1900-01-01T00:00:00Z",
-    }
-
-    dataset_cmip6 = {
-        'variable': 'ta',
-        'project': 'CMIP6',
-        'activity_id': 'CMIP',
-        'experiment_id': 'historical',
-        #'source_id': 'NorESM2-MM',
-        'variant_label': 'r1i1p1f1',
-        #'grid_label': 'gn',
-        'table_id': 'Amon',
-        'from_timestamp': "1850-01-01T00:00:00Z",
-        'to_timestamp': "1900-01-01T00:00:00Z",
-    }
+def main():
 
     cfg_file = Path(__file__).parent.parent / "config.yml"
     with cfg_file.open() as file:
         cfg = yaml.safe_load(file)
 
-    logon(**cfg["logon"])
-    connection = SearchConnection(**cfg["search_connection"])
-    files = search(connection, cfg['preferred_hosts'], cfg['ignore_hosts'],
-                   dataset_cmip6)
+    facets_file = Path(__file__).parent / "datasets.yml"
+    with facets_file.open() as file:
+        facets = yaml.safe_load(file)
 
-    for dataset_name in files:
-        save(dataset_name, files[dataset_name])
+    manager = LogonManager()
+    if not manager.is_logged_on():
+        manager.logon(**cfg['logon'])
+    print("Logged", "on" if manager.is_logged_on() else "off")
+
+    connection = SearchConnection(**cfg["search_connection"])
+
+    for plot_type, facet_list in facets.items():
+        print("Looking for data for plot type", plot_type)
+        for dataset_facets in facet_list:
+            print("Looking for data for dataset:")
+            print("\n".join(f"{k}: {v}" for k, v in dataset_facets.items()))
+            files = search(
+                connection,
+                cfg['preferred_hosts'],
+                cfg['ignore_hosts'],
+                dataset_facets,
+            )
+            for dataset_name in files:
+                sample_files(
+                    plot_type,
+                    dataset_name,
+                    files[dataset_name],
+                )
+
+
+if __name__ == '__main__':
+    main()
