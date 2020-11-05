@@ -31,7 +31,6 @@ setup(
     ],
     test_suite='tests',
     install_requires=[
-        'cube-helper',
         'scitools-iris>=2.2',
     ],
     # tests_require=[
@@ -40,7 +39,7 @@ setup(
     #     'pycodestyle',
     # ],
     extras_require={
-        'develop':  [
+        'develop': [
             'codespell',
             'docformatter',
             'isort',

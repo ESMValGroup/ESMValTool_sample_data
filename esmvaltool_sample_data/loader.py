@@ -1,16 +1,46 @@
 from pathlib import Path
 
-import cube_helper
-
-cube_helper.logger.muffle_logger()
+import cf_units
+import iris
 
 base_dir = Path(__file__).parent
 
 
+def strip_attributes(cube):
+    """Remove attributes that cause issues with merging and concatenation."""
+    for attr in ['creation_date', 'tracking_id', 'history']:
+        if attr in cube.attributes:
+            cube.attributes.pop(attr)
+
+
+def simplify_time(cube):
+    coord = cube.coord('time')
+    coord.convert_units(
+        cf_units.Unit('days since 1850-1-1 00:00:00',
+                      calendar=coord.units.calendar))
+
+
+def load_cubes_from_input_dirs(input_dirs):
+    """Loads all *.nc files from each input dir into a cube."""
+    for input_dir in input_dirs:
+        files = input_dir.glob('*.nc')
+        cubes = iris.load(str(file) for file in files)
+        for cube in cubes:
+            strip_attributes(cube)
+            simplify_time(cube)
+
+        cubes = cubes.concatenate()
+        cube = cubes[0]
+
+        yield cube
+
+
 def load_timeseries_data():
     """
-    ta / Amon / historical / r1i1p1f1, any grid, 1850 - onwards, all dimensions reduced to a few steps except for the time dimension
-    some other variable / ocean, probably a different frequency, similar number of timesteps, other dimensions reduced
+    Data: ta / Amon / historical / r1i1p1f1, any grid, 1850 - onwards.
+    All dimensions reduced to a few steps except for the time dimension
+    Some other variable / ocean, probably a different frequency,
+       similar number of timesteps, other dimensions reduced.
     """
 
     timeseries_dir = base_dir / 'data' / 'timeseries'
@@ -30,20 +60,16 @@ def load_timeseries_data():
         'CMIP6.CMIP.NOAA-GFDL.GFDL-ESM4.historical.r1i1p1f1.Amon.ta.gr1.v20190726',
 
         # BUG: next dataset is problematic
-        # raises ValueError: Cube 'air_temperature' must contain a single 1D y coordinate.
-        'CMIP6.CMIP.FIO-QLNM.FIO-ESM-2-0.historical.r1i1p1f1.Amon.ta.gn.v20191204',
+        # raises ValueError: Cube 'air_temperature' must contain
+        #     a single 1D y coordinate.
+        # 'CMIP6.CMIP.FIO-QLNM.FIO-ESM-2-0.historical.r1i1p1f1.Amon.ta.gn.v20191204',
     ]
 
     input_dirs = [timeseries_dir / data_dir for data_dir in data_dirs]
 
-    cubelists = []
+    cubes = load_cubes_from_input_dirs(input_dirs)
 
-    for input_dir in input_dirs:
-        print(input_dir)
-        cubelist = cube_helper.load(str(input_dir), filetype='.nc')
-        cubelists.append(cubelist)
-
-    return cubelists
+    return list(cubes)
 
 
 def load_map_data():
@@ -59,6 +85,5 @@ def load_profile_data():
 
 
 if __name__ == '__main__':
-    cube_helper.logger.reset_logger()
     ts = load_timeseries_data()
     breakpoint()
