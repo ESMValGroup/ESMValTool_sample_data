@@ -35,7 +35,7 @@ def load_cubes_from_input_dirs(input_dirs):
         yield cube
 
 
-def load_timeseries_data():
+def load_timeseries_cubes():
     """
     Data: ta / Amon / historical / r1i1p1f1, any grid, 1850 - onwards.
     All dimensions reduced to a few steps except for the time dimension
@@ -72,18 +72,18 @@ def load_timeseries_data():
     return list(cubes)
 
 
-def load_map_data():
+def load_map_cubes():
     """a 4D atmospheric variable, all dimensions reduced to a few steps except
     the horizontal dimension(s) same for an ocean variable."""
     raise NotImplementedError
 
 
-def load_profile_data():
+def load_profile_cubes():
     """a 4D atmospheric variable, all dimensions reduced to a few steps except
     the horizontal dimension(s) same for an ocean variable."""
     raise NotImplementedError
 
 
 if __name__ == '__main__':
-    ts = load_timeseries_data()
+    ts = load_timeseries_cubes()
     breakpoint()

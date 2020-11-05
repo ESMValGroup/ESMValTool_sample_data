@@ -1,1 +1,1 @@
-from .loader import load_map_data, load_profile_data, load_timeseries_data
+from .loader import load_map_cubes, load_profile_cubes, load_timeseries_cubes
