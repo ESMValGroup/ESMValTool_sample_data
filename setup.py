@@ -1,9 +1,11 @@
-import os
-
 from setuptools import setup
 
 with open('README.md') as readme_file:
     readme = readme_file.read()
+
+PACKAGES = [
+    'esmvaltool_sample_data',
+]
 
 setup(
     name='ESMValTool sample data',
@@ -13,9 +15,7 @@ setup(
     author="",
     author_email='',
     url='https://github.com/ESMValGroup/ESMValTool_sample_data',
-    packages=[
-        'esmvaltool_sample_data',
-    ],
+    packages=PACKAGES,
     include_package_data=True,
     license="",
     zip_safe=False,
