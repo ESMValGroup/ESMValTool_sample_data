@@ -130,20 +130,15 @@ def save_sample(data_url, target):
     # select bottom two vertical levels
     cube = cube[:, :2]
     # select horizontal region
-    exceptions = (
-        IndexError,  # 0 points in requested range
-        iris.exceptions.CoordinateMultiDimError,  # 2D lat/lon coord
-        iris.exceptions.CoordinateNotFoundError,  # wrong lat/lon coord
-    )
     try:
         latitude = iris.coords.CoordExtent('latitude', 88, 90)
         cube = cube.intersection(latitude, ignore_bounds=True)
-    except exceptions:
+    except IndexError:
         cube = cube[:, :, :2]
     try:
         longitude = iris.coords.CoordExtent('longitude', 0, 2)
         cube = cube.intersection(longitude, ignore_bounds=True)
-    except exceptions:
+    except IndexError:
         cube = cube[:, :, :, :2]
     print("Shape of sample:", cube.shape)
 
