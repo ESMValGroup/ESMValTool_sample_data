@@ -1,18 +1,25 @@
 ---
-timeseries:
+datasets:
+  timeseries:
 
-  - variable: ta
-    project: CMIP6
-    activity_id: CMIP
-    experiment_id: historical
-    variant_label: r1i1p1f1
-    table_id: day
-    from_timestamp: "2000-01-01T00:00:00Z"
-    to_timestamp: "2003-01-01T00:00:00Z"
+    - variable: ta
+      project: CMIP6
+      activity_id: CMIP
+      experiment_id: historical
+      variant_label: r1i1p1f1
+      table_id: day
+      from_timestamp: "2000-01-01T00:00:00Z"
+      to_timestamp: "2003-01-01T00:00:00Z"
 
-  - variable: thetao
-    project: CMIP6
-    activity_id: CMIP
-    experiment_id: historical
-    variant_label: r1i1p1f1
-    table_id: Omon
+    - variable: thetao
+      project: CMIP6
+      activity_id: CMIP
+      experiment_id: historical
+      variant_label: r1i1p1f1
+      table_id: Omon
+      from_timestamp: "1950-01-01T00:00:00Z"
+
+ignore:
+  # Unsupported grid
+  - CMIP6.CMIP.AWI.AWI-CM-1-1-MR.historical.r1i1p1f1.Omon.thetao.gn.v20181218
+  - CMIP6.CMIP.AWI.AWI-ESM-1-1-LR.historical.r1i1p1f1.Omon.thetao.gn.v20200212

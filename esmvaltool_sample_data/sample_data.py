@@ -14,11 +14,12 @@ def get_time(filename):
 
     Example: any string ending with _20010101-20011231.nc.
     """
-    fmt = "%Y%m%d"
-    start, end = (datetime.datetime.strptime(date, fmt)
-                  for date in Path(filename).stem.split('_')[-1].split('-'))
+    t1, t2 = Path(filename).stem.split('_')[-1].split('-')
+    fmt = {6: "%Y%m", 8: "%Y%m%d"}
+    t1 = datetime.datetime.strptime(t1, fmt[len(t1)])
+    t2 = datetime.datetime.strptime(t2, fmt[len(t2)])
 
-    return start, end
+    return t1, t2
 
 
 def select_by_time(filename, from_timestamp, to_timestamp):
@@ -125,21 +126,31 @@ def save_sample(data_url, target):
         )
         cube = iris.load_cube(data_url)
     print(cube)
+
     # select bottom two vertical levels
     cube = cube[:, :2]
     # select horizontal region
+    exceptions = (
+        IndexError,  # 0 points in requested range
+        iris.exceptions.CoordinateMultiDimError,  # 2D lat/lon coord
+        iris.exceptions.CoordinateNotFoundError,  # wrong lat/lon coord
+    )
     try:
         latitude = iris.coords.CoordExtent('latitude', 88, 90)
         cube = cube.intersection(latitude, ignore_bounds=True)
-    except (IndexError, iris.exceptions.CoordinateMultiDimError):
+    except exceptions:
         cube = cube[:, :, :2]
     try:
         longitude = iris.coords.CoordExtent('longitude', 0, 2)
         cube = cube.intersection(longitude, ignore_bounds=True)
-    except (IndexError, iris.exceptions.CoordinateMultiDimError):
+    except exceptions:
         cube = cube[:, :, :, :2]
-
     print("Shape of sample:", cube.shape)
+
+    # Remove unsupported attribute, see
+    # https://github.com/Unidata/netcdf4-python/issues/1020
+    cube.attributes.pop('_NCProperties', None)
+
     iris.save(cube, target=target)
 
 
@@ -149,7 +160,9 @@ def sample_files(plot_type, dataset_name, files):
                    dataset_name.replace('.', os.sep))
         dirpath.mkdir(parents=True, exist_ok=True)
         target = dirpath / Path(filename).name
-        if not target.exists():
+        if target.exists():
+            print("File exists, skipping:", target)
+        else:
             save_sample(filename, target=str(target))
 
 
@@ -161,7 +174,7 @@ def main():
 
     facets_file = Path(__file__).parent / "datasets.yml"
     with facets_file.open() as file:
-        facets = yaml.safe_load(file)
+        cfg_data = yaml.safe_load(file)
 
     manager = LogonManager()
     if not manager.is_logged_on():
@@ -170,7 +183,7 @@ def main():
 
     connection = SearchConnection(**cfg["search_connection"])
 
-    for plot_type, facet_list in facets.items():
+    for plot_type, facet_list in cfg_data['datasets'].items():
         print("Looking for data for plot type", plot_type)
         for dataset_facets in facet_list:
             print("Looking for data for dataset:")
@@ -181,12 +194,17 @@ def main():
                 cfg['ignore_hosts'],
                 dataset_facets,
             )
-            for dataset_name in files:
-                sample_files(
-                    plot_type,
-                    dataset_name,
-                    files[dataset_name],
-                )
+            for i, dataset_name in enumerate(files, start=1):
+                print("Progress: sampling dataset", i, "of", len(files))
+                if dataset_name in cfg_data['ignore']:
+                    print("Skipping ignored dataset", dataset_name)
+                else:
+                    print("Sampling dataset", dataset_name)
+                    sample_files(
+                        plot_type,
+                        dataset_name,
+                        files[dataset_name],
+                    )
 
 
 if __name__ == '__main__':
