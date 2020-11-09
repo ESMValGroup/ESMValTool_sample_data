@@ -80,7 +80,7 @@ def load_map_cubes():
 
 def load_profile_cubes():
     """a 4D atmospheric variable, all dimensions reduced to a few steps except
-    the horizontal dimension(s) same for an ocean variable."""
+    the vertical dimension(s) same for an ocean variable."""
     raise NotImplementedError
 
 
