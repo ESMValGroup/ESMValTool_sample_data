@@ -9,20 +9,16 @@ from pyesgf.logon import LogonManager
 from pyesgf.search import SearchConnection
 
 
-def str2date(datestr):
-    formats = {
-        4: "%Y",
-        6: "%Y%m",
-        8: "%Y%m%d",
-    }
-    fmt = formats[len(datestr)]
-    return datetime.datetime.strptime(datestr, fmt)
-
-
 def get_time(filename):
-    """Read the start and end date from a string ending with e.g. 20010101-20011231.nc"""
-    start_date, end_date = Path(filename).stem[-17:].split('-')
-    return str2date(start_date), str2date(end_date)
+    """Read the start and end date from a string.
+
+    Example: any string ending with _20010101-20011231.nc.
+    """
+    fmt = "%Y%m%d"
+    start, end = (datetime.datetime.strptime(date, fmt)
+                  for date in Path(filename).stem.split('_')[-1].split('-'))
+
+    return start, end
 
 
 def select_by_time(filename, from_timestamp, to_timestamp):
@@ -86,6 +82,9 @@ def search(connection, preferred_hosts, ignore_hosts, facets):
             sorted(copies.keys()),
         )
         host = select_host(copies.keys(), preferred_hosts, ignore_hosts)
+        if host is None:
+            print("All hosts that have this datasets are ignored.")
+            continue
         dataset = copies[host]
 
         if dataset_name not in files:
@@ -102,7 +101,7 @@ def search(connection, preferred_hosts, ignore_hosts, facets):
                 facets.get('to_timestamp'),
             )
             if select:
-                print(file.opendap_url)
+                print("Found", file.opendap_url)
                 files[dataset_name].append(file.opendap_url)
         print(
             "Found",
