@@ -19,4 +19,11 @@ datasets:
       table_id: Amon
       from_timestamp: "1950-01-01T00:00:00Z"
 
-ignore: []
+ignore:
+  # too big because data is stored one file per year
+  - CMIP6.CMIP.AWI.AWI-ESM-1-1-LR.historical.r1i1p1f1.Amon.ta.gn.v20200212
+  - CMIP6.CMIP.EC-Earth-Consortium.EC-Earth3-AerChem.historical.r1i1p1f1.Amon.ta.gr.v20200624
+  - CMIP6.CMIP.EC-Earth-Consortium.EC-Earth3-Veg.historical.r1i1p1f1.Amon.ta.gr.v20200225
+  - CMIP6.CMIP.EC-Earth-Consortium.EC-Earth3-Veg-LR.historical.r1i1p1f1.Amon.ta.gr.v20200217
+  # something wrong with lon coord
+  - CMIP6.CMIP.UA.MCM-UA-1-0.historical.r1i1p1f1.Amon.ta.gn.v20190731
