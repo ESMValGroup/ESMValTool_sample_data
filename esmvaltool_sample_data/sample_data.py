@@ -1,3 +1,16 @@
+"""Download sample data from ESGF.
+
+This script uses two configuration files:
+
+1) A configuration file called config.yml in the root of the repostitory
+   that contains account details for logging in to ESGF.
+   Copy config.yml.template to config.yml and add your own account details to
+   get started.
+
+2) A configuration file called datasets.yml in esmvaltool_sample_data that
+   defines the datasets to download.
+
+"""
 import datetime
 import os
 import warnings
@@ -12,18 +25,40 @@ from pyesgf.search import SearchConnection
 def get_time(filename):
     """Read the start and end date from a string.
 
-    Example: any string ending with _20010101-20011231.nc.
-    """
-    t1, t2 = Path(filename).stem.split('_')[-1].split('-')
-    fmt = {6: "%Y%m", 8: "%Y%m%d"}
-    t1 = datetime.datetime.strptime(t1, fmt[len(t1)])
-    t2 = datetime.datetime.strptime(t2, fmt[len(t2)])
+    Parameters
+    ----------
+    filename : str
+        A filename ending with a date, e.g. _20010101-20011231.nc.
 
-    return t1, t2
+    Returns
+    -------
+    (datetetime.datetime, datetime.datetime)
+        A tuple containing the start and end date of the file.
+
+    """
+    times = Path(filename).stem.split('_')[-1].split('-')
+    fmt = {
+        6: "%Y%m",
+        8: "%Y%m%d",
+    }
+    times = (datetime.datetime.strptime(t, fmt[len(t)]) for t in times)
+
+    return tuple(times)
 
 
 def select_by_time(filename, from_timestamp, to_timestamp):
-    """Select file if it contains data in the requested timerange."""
+    """Select file if it contains data in the requested timerange.
+
+    Parameters
+    ----------
+    filename : str
+        A filename ending with a date, e.g. _20010101-20011231.nc.
+    from_timestamp : str or None
+        The required start date, formatted as "2000-01-01T00:00:00Z".
+    to_timestamp : str or None
+        The required end date, formatted as "2000-01-01T00:00:00Z".
+
+    """
     if from_timestamp is None and to_timestamp is None:
         return True
 
@@ -43,9 +78,29 @@ def select_by_time(filename, from_timestamp, to_timestamp):
 
 
 def select_host(hosts, preferred_hosts, ignore_hosts):
-    """Select a suitable host from a list of hosts."""
-    # Not sure if this is reliable: sometimes no files are found on
-    # the selected host.
+    """Select a suitable host from a list of hosts.
+
+    Parameters
+    ----------
+    hosts : :obj:`list` of :obj:`str`
+        List of all available hosts.
+    preferred_hosts : :obj:`list` of :obj:`str`
+        List of preferred hosts.
+    ignore_hosts : :obj:`list` of :obj:`str`
+        List of hosts to ignore.
+
+    Returns
+    -------
+    str or None
+        The name of the most suitable host or None of all available hosts are
+        in `ignore_hosts`.
+
+    Notes
+    -----
+        Not sure if this is reliable: sometimes no files are found on the
+        selected host.
+
+    """
     hosts = [h for h in hosts if h not in ignore_hosts]
     if not hosts:
         return None
@@ -58,6 +113,25 @@ def select_host(hosts, preferred_hosts, ignore_hosts):
 
 
 def search(connection, preferred_hosts, ignore_hosts, facets):
+    """Search for files on ESGF.
+
+    Parameters
+    ----------
+    connection : pyesgf.search.SearchConnection
+        Search connection
+    preferred_hosts : :obj:`list` of :obj:`str`
+        List of preferred hosts.
+    ignore_hosts : :obj:`list` of :obj:`str`
+        List of hosts to ignore.
+    facets : :obj:`dict` of :obj:`str`
+        Facets to constrain the search.
+
+    Returns
+    -------
+    :obj:`dict` of :obj:`list` of :obj:`str`
+        A dict with dataset names as keys and a list of filenames
+        (OPeNDAP URLs) as values.
+    """
     print("Searching ...")
     ctx = connection.new_context(**facets, latest=True)
     print("Found", ctx.hit_count, "datasets (including copies)")
@@ -115,8 +189,25 @@ def search(connection, preferred_hosts, ignore_hosts, facets):
     return files
 
 
-def save_sample(data_url, target):
-    print("Saving sample of", data_url, "to", target)
+def save_sample(in_file, out_file):
+    """Load data and save a sample.
+
+    Selects:
+      - the first 2 pressure levels
+      - latitudes between 88 and 90 degrees north
+      - longitudes between 0 and 2 degrees east
+
+    Only works with data with 1 dimensional latitude/longitude coordinates.
+
+    Parameters
+    ----------
+    in_file : str
+        Path to the input file.
+    out_file : str
+        Path to the output file.
+
+    """
+    print("Saving sample of", in_file, "to", out_file)
     with warnings.catch_warnings():
         warnings.filterwarnings(
             'ignore',
@@ -124,7 +215,7 @@ def save_sample(data_url, target):
             category=UserWarning,
             module='iris',
         )
-        cube = iris.load_cube(data_url)
+        cube = iris.load_cube(in_file)
     print(cube)
 
     # select bottom two vertical levels
@@ -146,23 +237,43 @@ def save_sample(data_url, target):
     # https://github.com/Unidata/netcdf4-python/issues/1020
     cube.attributes.pop('_NCProperties', None)
 
-    iris.save(cube, target=target)
+    iris.save(cube, target=out_file)
 
 
 def sample_files(plot_type, dataset_name, files):
+    """Sample files from ESGF.
+
+    Parameters
+    ----------
+    plot_type : str
+        The type of plot that can be made with the sampled data.
+    dataset_name : str
+        Name of the dataset to sample.
+    files : :obj:`list` of :obj:`str`
+        A list of filenames that comprise the dataset.
+
+    """
     for filename in files:
         dirpath = (Path(__file__).parent / 'data' / plot_type /
                    dataset_name.replace('.', os.sep))
         dirpath.mkdir(parents=True, exist_ok=True)
-        target = dirpath / Path(filename).name
-        if target.exists():
-            print("File exists, skipping:", target)
+        out_file = dirpath / Path(filename).name
+        if out_file.exists():
+            print("File exists, skipping:", out_file)
         else:
-            save_sample(filename, target=str(target))
+            save_sample(filename, str(out_file))
 
 
 def main():
+    """Download sample data from ESGF.
 
+    This will first find all available datasets on ESGF that match the facets
+    in datasets.yml and subsequently find all available files on a single host.
+
+    The resulting list of files is then sampled and stored locally in the
+    directory 'data' using a commonly used directory structure.
+
+    """
     cfg_file = Path(__file__).parent.parent / "config.yml"
     with cfg_file.open() as file:
         cfg = yaml.safe_load(file)
@@ -183,14 +294,17 @@ def main():
         for dataset_facets in facet_list:
             print("Looking for data for dataset:")
             print("\n".join(f"{k}: {v}" for k, v in dataset_facets.items()))
+
             files = search(
                 connection,
                 cfg['preferred_hosts'],
                 cfg['ignore_hosts'],
                 dataset_facets,
             )
+
             for i, dataset_name in enumerate(files, start=1):
                 print("Progress: sampling dataset", i, "of", len(files))
+
                 if dataset_name in cfg_data['ignore']:
                     print("Skipping ignored dataset", dataset_name)
                 else:
