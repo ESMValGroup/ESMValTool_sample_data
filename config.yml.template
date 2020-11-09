@@ -1,3 +1,5 @@
+# Arguments to
+# https://esgf-pyclient.readthedocs.io/en/latest/api.html#pyesgf.logon.LogonManager.logon
 logon:
   hostname: esgf-data.dkrz.de
   username: cookiemonster
@@ -5,12 +7,15 @@ logon:
   interactive: false
   bootstrap: true
 
+# Arguments to
+# https://esgf-pyclient.readthedocs.io/en/latest/api.html#pyesgf.search.connection.SearchConnection
 search_connection:
   # url: "https://esgf-data.dkrz.de/esg-search"
   url: "http://esgf-node.llnl.gov/esg-search"
   distrib: true
-  cache: "pyesgf-cache"
   timeout: 120
+  cache: 'pyesgf-cache'
+  expire_after: 86400  # cache expires after 1 day
 
 preferred_hosts:
   # Use nearby hosts
