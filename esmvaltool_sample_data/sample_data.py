@@ -223,14 +223,25 @@ def save_sample(in_file, out_file):
     # select horizontal region
     try:
         latitude = iris.coords.CoordExtent('latitude', 88, 90)
-        cube = cube.intersection(latitude, ignore_bounds=True)
+        lat_size = cube[0, 0].intersection(
+            latitude,
+            ignore_bounds=True,
+        ).shape[0]
+        if lat_size < 2:
+            lat_size = 2
     except IndexError:
-        cube = cube[:, :, :2]
+        lat_size = 2
     try:
         longitude = iris.coords.CoordExtent('longitude', 0, 2)
-        cube = cube.intersection(longitude, ignore_bounds=True)
+        lon_size = cube[0, 0].intersection(
+            longitude,
+            ignore_bounds=True,
+        ).shape[1]
+        if lon_size < 2:
+            lon_size = 2
     except IndexError:
-        cube = cube[:, :, :, :2]
+        lon_size = 2
+    cube = cube[:, :, :lat_size, :lon_size]
     print("Shape of sample:", cube.shape)
 
     # Remove unsupported attribute, see
