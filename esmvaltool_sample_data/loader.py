@@ -14,22 +14,24 @@ problematic = [
 ]
 
 
-def strip_attributes(cube):
-    """Remove attributes that cause issues with merging and concatenation."""
+def strip_attributes(cube: 'iris.Cube') -> None:
+    """Remove attributes in-place that cause issues with merging and
+    concatenation."""
     for attr in ['creation_date', 'tracking_id', 'history']:
         if attr in cube.attributes:
             cube.attributes.pop(attr)
 
 
-def simplify_time(cube):
+def simplify_time(cube: 'iris.Cube') -> None:
+    """Simplifies the time coordinate in-place."""
     coord = cube.coord('time')
     coord.convert_units(
         cf_units.Unit('days since 1850-1-1 00:00:00',
                       calendar=coord.units.calendar))
 
 
-def load_cubes_from_input_dirs(input_dirs):
-    """Loads all *.nc files from each input dir into a cube."""
+def load_cubes_from_input_dirs(input_dirs: list) -> 'iris.Cube':
+    """Generator that loads all *.nc files from each input dir into a cube."""
     for input_dir in input_dirs:
         if str(input_dir) in problematic:
             # print('Skipping', input_dir)
@@ -46,12 +48,20 @@ def load_cubes_from_input_dirs(input_dirs):
         yield cube
 
 
-def load_timeseries_cubes(mip_table='Amon'):
-    """
-    Data: ta / Amon / historical / r1i1p1f1, any grid, 1950 - onwards.
-    All dimensions reduced to a few steps except for the time dimension
-    Some other variable / ocean, probably a different frequency,
-       similar number of timesteps, other dimensions reduced.
+def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
+    """Returns a list of iris cubes with timeseries data.
+
+    The data are: ta / Amon / historical / r1i1p1f1, any grid, 1950 - onwards.
+    All dimensions were reduced to a few steps except for the time dimension.
+
+    Parameters
+    ----------
+    mip_table: str
+        select monthly (`Amon`) or daily (`day`) data.
+
+    Returns
+    -------
+    list of iris.cube
     """
 
     timeseries_dir = base_dir / 'data' / 'timeseries'
