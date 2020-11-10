@@ -42,7 +42,9 @@ setup(
         'develop': [
             'codespell',
             'docformatter',
+            'esgf-pyclient',
             'isort',
+            'myproxyclient',
             'pre-commit',
             'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
             'yamllint',
