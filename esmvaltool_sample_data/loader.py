@@ -7,10 +7,20 @@ base_dir = Path(__file__).parent
 
 problematic = [
     # iris.exceptions.ConcatenateError: failed to concatenate into a single cube.
-    'esmvaltool_sample_data/data/timeseries/CMIP6/CMIP/NCC/NorCPM1/historical/r1i1p1f1/Amon/ta/gn/v20190914',
+    'data/timeseries/CMIP6/CMIP/NCC/NorCPM1/historical/r1i1p1f1/Amon/ta/gn/v20190914',
     # UserWarning: Gracefully filling 'lat' dimension coordinate masked points
-    'esmvaltool_sample_data/data/timeseries/CMIP6/CMIP/NCAR/CESM2-FV2/historical/r1i1p1f1/Amon/ta/gn/v20191120',
-    'esmvaltool_sample_data/data/timeseries/CMIP6/CMIP/NCAR/CESM2-WACCM-FV2/historical/r1i1p1f1/Amon/ta/gn/v20191120',
+    'data/timeseries/CMIP6/CMIP/NCAR/CESM2-FV2/historical/r1i1p1f1/Amon/ta/gn/v20191120',
+    'data/timeseries/CMIP6/CMIP/NCAR/CESM2-WACCM-FV2/historical/r1i1p1f1/Amon/ta/gn/v20191120',
+]
+
+whitelist = [
+    # (780, 2, 2, 2) 365_day
+    'data/timeseries/CMIP6/CMIP/CAS/FGOALS-f3-L/historical/r1i1p1f1/Amon/ta/gr/v20190927',
+    'data/timeseries/CMIP6/CMIP/E3SM-Project/E3SM-1-0/historical/r1i1p1f1/Amon/ta/gr/v20191220',
+    'data/timeseries/CMIP6/CMIP/E3SM-Project/E3SM-1-1-ECA/historical/r1i1p1f1/Amon/ta/gr/v20200624',
+    'data/timeseries/CMIP6/CMIP/E3SM-Project/E3SM-1-1/historical/r1i1p1f1/Amon/ta/gr/v20191211',
+    'data/timeseries/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/historical/r1i1p1f1/Amon/ta/gr1/v20180701',
+    'data/timeseries/CMIP6/CMIP/NOAA-GFDL/GFDL-ESM4/historical/r1i1p1f1/Amon/ta/gr1/v20190726',
 ]
 
 
@@ -33,10 +43,6 @@ def simplify_time(cube: 'iris.Cube') -> None:
 def load_cubes_from_input_dirs(input_dirs: list) -> 'iris.Cube':
     """Generator that loads all *.nc files from each input dir into a cube."""
     for input_dir in input_dirs:
-        if str(input_dir) in problematic:
-            # print('Skipping', input_dir)
-            continue
-        # print(input_dir)
         files = input_dir.glob('*.nc')
         cubes = iris.load(str(file) for file in files)
         for cube in cubes:
@@ -45,7 +51,25 @@ def load_cubes_from_input_dirs(input_dirs: list) -> 'iris.Cube':
 
         cube = cubes.concatenate_cube()
 
+        # print(cube.shape, cube.coord('time').units.calendar, input_dir)
+
         yield cube
+
+
+def filter_problematic(dirs):
+    base = Path(__file__).parent
+    for drc in dirs:
+        relative_dir = drc.relative_to(base)
+        if str(relative_dir) not in problematic:
+            yield drc
+
+
+def get_subset(dirs):
+    base = Path(__file__).parent
+    for drc in dirs:
+        relative_dir = drc.relative_to(base)
+        if str(relative_dir) in whitelist:
+            yield drc
 
 
 def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
@@ -68,6 +92,9 @@ def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
 
     paths = timeseries_dir.glob(f'**/{mip_table}/**/*.nc')
     input_dirs = list(set(path.parent for path in paths))
+
+    input_dirs = filter_problematic(input_dirs)
+    input_dirs = get_subset(input_dirs)
 
     cubes = load_cubes_from_input_dirs(input_dirs)
 
