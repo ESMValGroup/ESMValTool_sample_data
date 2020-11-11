@@ -241,7 +241,7 @@ def save_sample(in_file, out_file):
             lon_size = 2
     except IndexError:
         lon_size = 2
-    cube = cube[:, :, :lat_size, :lon_size]
+    cube = cube[:, :, -lat_size:, :lon_size]
     print("Shape of sample:", cube.shape)
 
     # Remove unsupported attribute, see
