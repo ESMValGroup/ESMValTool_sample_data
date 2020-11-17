@@ -2,37 +2,20 @@ from pathlib import Path
 
 import cf_units
 import iris
+import yaml
 
 base_dir = Path(__file__).parent
 
-problematic = [
-    # iris.exceptions.ConcatenateError: failed to concatenate into a single cube.
-    'data/timeseries/CMIP6/CMIP/NCC/NorCPM1/historical/r1i1p1f1/Amon/ta/gn/v20190914',
-    # UserWarning: Gracefully filling 'lat' dimension coordinate masked points
-    'data/timeseries/CMIP6/CMIP/NCAR/CESM2-FV2/historical/r1i1p1f1/Amon/ta/gn/v20191120',
-    'data/timeseries/CMIP6/CMIP/NCAR/CESM2-WACCM-FV2/historical/r1i1p1f1/Amon/ta/gn/v20191120',
-    'data/timeseries/CMIP6/CMIP/CSIRO-ARCCSS/ACCESS-CM2/historical/r1i1p1f1/day/ta/gn/v20191108',
-]
+VERBOSE = False
 
-whitelist = {
-    'Amon': (
-        # (780, 2, 2, 2) 365_day
-        'data/timeseries/CMIP6/CMIP/CAS/FGOALS-f3-L/historical/r1i1p1f1/Amon/ta/gr/v20190927',
-        'data/timeseries/CMIP6/CMIP/E3SM-Project/E3SM-1-0/historical/r1i1p1f1/Amon/ta/gr/v20191220',
-        'data/timeseries/CMIP6/CMIP/E3SM-Project/E3SM-1-1-ECA/historical/r1i1p1f1/Amon/ta/gr/v20200624',
-        'data/timeseries/CMIP6/CMIP/E3SM-Project/E3SM-1-1/historical/r1i1p1f1/Amon/ta/gr/v20191211',
-        'data/timeseries/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/historical/r1i1p1f1/Amon/ta/gr1/v20180701',
-        'data/timeseries/CMIP6/CMIP/NOAA-GFDL/GFDL-ESM4/historical/r1i1p1f1/Amon/ta/gr1/v20190726',
-    ),
-    'day': (
-        # (3650, 2, 3, 2) 365_day
-        'data/timeseries/CMIP6/CMIP/AS-RCEC/TaiESM1/historical/r1i1p1f1/day/ta/gn/v20200626',
-        'data/timeseries/CMIP6/CMIP/NCAR/CESM2-WACCM/historical/r1i1p1f1/day/ta/gn/v20190227',
-        'data/timeseries/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/day/ta/gn/v20190308',
-        'data/timeseries/CMIP6/CMIP/NCC/NorESM2-MM/historical/r1i1p1f1/day/ta/gn/v20191108',
-        'data/timeseries/CMIP6/CMIP/NASA-GISS/GISS-E2-1-G/historical/r1i1p1f1/day/ta/gn/v20181015',
-    )
-}
+with open(base_dir / 'datasets.yml', 'r') as f:
+    config = yaml.safe_load(f)
+
+ignore_list = [fn.replace('.', '/') for fn in config['ignore']]
+
+ignore_list += [
+    # Add paths to problematic data sets here or to `datasets.yml`
+]
 
 
 def strip_attributes(cube: 'iris.Cube') -> None:
@@ -53,7 +36,10 @@ def simplify_time(cube: 'iris.Cube') -> None:
 
 def load_cubes_from_input_dirs(input_dirs: list) -> 'iris.Cube':
     """Generator that loads all *.nc files from each input dir into a cube."""
-    for input_dir in input_dirs:
+    for i, input_dir in enumerate(sorted(input_dirs)):
+        if VERBOSE:
+            print(f'Loading #{i:02d}:', input_dir)
+
         files = input_dir.glob('*.nc')
         cubes = iris.load(str(file) for file in files)
         for cube in cubes:
@@ -62,19 +48,19 @@ def load_cubes_from_input_dirs(input_dirs: list) -> 'iris.Cube':
 
         cube = cubes.concatenate_cube()
 
-        # print(cube.shape, cube.coord('time').units.calendar, input_dir)
+        if VERBOSE:
+            print('           ', cube.shape, cube.coord('time').units.calendar)
 
         yield cube
 
 
-def get_subset(dirs, subset):
-    base = Path(__file__).parent
+def filter_ignored_datasets(dirs, root):
     for drc in dirs:
-        relative_dir = drc.relative_to(base)
-        if str(relative_dir) in problematic:
-            continue
-        if str(relative_dir) in subset:
+        test_drc = str(drc.relative_to(root))
+        if test_drc not in ignore_list:
             yield drc
+        elif VERBOSE:
+            print('Ignored:', test_drc)
 
 
 def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
@@ -98,9 +84,7 @@ def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
     paths = timeseries_dir.glob(f'**/{mip_table}/**/*.nc')
     input_dirs = list(set(path.parent for path in paths))
 
-    subset = whitelist[mip_table]
-
-    input_dirs = get_subset(input_dirs, subset=subset)
+    input_dirs = list(filter_ignored_datasets(input_dirs, timeseries_dir))
 
     cubes = load_cubes_from_input_dirs(input_dirs)
 
@@ -120,6 +104,12 @@ def load_profile_cubes():
 
 
 if __name__ == '__main__':
+    VERBOSE = True
+
+    print('Loading daily data')
     ts_day = load_timeseries_cubes('day')
+    print()
+    print('Loading monthly data')
     ts_amon = load_timeseries_cubes('Amon')
+
     breakpoint()
