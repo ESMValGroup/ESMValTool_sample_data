@@ -91,18 +91,6 @@ def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
     return list(cubes)
 
 
-def load_map_cubes():
-    """a 4D atmospheric variable, all dimensions reduced to a few steps except
-    the horizontal dimension(s) same for an ocean variable."""
-    raise NotImplementedError
-
-
-def load_profile_cubes():
-    """a 4D atmospheric variable, all dimensions reduced to a few steps except
-    the vertical dimension(s) same for an ocean variable."""
-    raise NotImplementedError
-
-
 if __name__ == '__main__':
     VERBOSE = True
 
