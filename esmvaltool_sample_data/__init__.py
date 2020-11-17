@@ -13,10 +13,6 @@ with open(base_dir / 'datasets.yml', 'r') as f:
 
 ignore_list = [fn.replace('.', '/') for fn in config['ignore']]
 
-ignore_list += [
-    # Add paths to problematic data sets here or to `datasets.yml`
-]
-
 
 def strip_attributes(cube: 'iris.Cube') -> None:
     """Remove attributes in-place that cause issues with merging and
@@ -107,4 +103,4 @@ if __name__ == '__main__':
             print(i)
             cube.regrid(grid=first_cube, scheme=iris.analysis.Linear())
 
-    breakpoint()
+    # breakpoint()
