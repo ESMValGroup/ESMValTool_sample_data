@@ -106,10 +106,17 @@ def load_profile_cubes():
 if __name__ == '__main__':
     VERBOSE = True
 
-    print('Loading daily data')
-    ts_day = load_timeseries_cubes('day')
-    print()
-    print('Loading monthly data')
-    ts_amon = load_timeseries_cubes('Amon')
+    for mip_table in (
+            'Amon',
+            'day',
+    ):
+        print()
+        print(f'Loading `{mip_table}`')
+        ts = load_timeseries_cubes(mip_table)
+
+        first_cube = ts[0]
+        for i, cube in enumerate(ts):
+            print(i)
+            cube.regrid(grid=first_cube, scheme=iris.analysis.Linear())
 
     breakpoint()
