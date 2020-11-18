@@ -265,8 +265,8 @@ def sample_files(plot_type, dataset_name, files):
 
     """
     for filename in files:
-        dirpath = (Path(__file__).parent / 'data' / plot_type /
-                   dataset_name.replace('.', os.sep))
+        dirpath = (Path(__file__).parent / 'esmvaltool_sample_data' / 'data' / 
+            plot_type / dataset_name.replace('.', os.sep))
         dirpath.mkdir(parents=True, exist_ok=True)
         out_file = dirpath / Path(filename).name
         if out_file.exists():
