@@ -9,7 +9,6 @@ This script uses two configuration files:
 
 2) A configuration file called datasets.yml in esmvaltool_sample_data that
    defines the datasets to download.
-
 """
 import datetime
 import warnings
@@ -33,7 +32,6 @@ def get_time(filename):
     -------
     (datetetime.datetime, datetime.datetime)
         A tuple containing the start and end date of the file.
-
     """
     times = Path(filename).stem.split('_')[-1].split('-')
     fmt = {
@@ -56,7 +54,6 @@ def select_by_time(filename, from_timestamp, to_timestamp):
         The required start date, formatted as "2000-01-01T00:00:00Z".
     to_timestamp : str or None
         The required end date, formatted as "2000-01-01T00:00:00Z".
-
     """
     if from_timestamp is None and to_timestamp is None:
         return True
@@ -98,7 +95,6 @@ def select_host(hosts, preferred_hosts, ignore_hosts):
     -----
         Not sure if this is reliable: sometimes no files are found on the
         selected host.
-
     """
     hosts = [h for h in hosts if h not in ignore_hosts]
     if not hosts:
@@ -204,7 +200,6 @@ def save_sample(in_file, out_file):
         Path to the input file.
     out_file : str
         Path to the output file.
-
     """
     print("Saving sample of", in_file, "to", out_file)
     with warnings.catch_warnings():
@@ -261,7 +256,6 @@ def sample_files(plot_type, dataset_name, files):
         Name of the dataset to sample.
     files : :obj:`list` of :obj:`str`
         A list of filenames that comprise the dataset.
-
     """
     project_dir = Path(__file__).parent
     data_dir = project_dir / 'esmvaltool_sample_data' / 'data' / plot_type
@@ -284,7 +278,6 @@ def main():
 
     The resulting list of files is then sampled and stored locally in the
     directory 'data' using a commonly used directory structure.
-
     """
     cfg_file = Path(__file__).parent.parent / "config.yml"
     with cfg_file.open() as file:
