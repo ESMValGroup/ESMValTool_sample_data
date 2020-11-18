@@ -12,7 +12,6 @@ This script uses two configuration files:
 
 """
 import datetime
-import os
 import warnings
 from pathlib import Path
 
@@ -264,11 +263,13 @@ def sample_files(plot_type, dataset_name, files):
         A list of filenames that comprise the dataset.
 
     """
+    project_dir = Path(__file__).parent
+    data_dir = project_dir / 'esmvaltool_sample_data' / 'data' / plot_type
+    data_path = data_dir.joinpath(*dataset_name.split('.'))
+    data_path.mkdir(parents=True, exist_ok=True)
+
     for filename in files:
-        dirpath = (Path(__file__).parent / 'esmvaltool_sample_data' / 'data' / 
-            plot_type / dataset_name.replace('.', os.sep))
-        dirpath.mkdir(parents=True, exist_ok=True)
-        out_file = dirpath / Path(filename).name
+        out_file = data_path / Path(filename).name
         if out_file.exists():
             print("File exists, skipping:", out_file)
         else:
