@@ -279,11 +279,12 @@ def main():
     The resulting list of files is then sampled and stored locally in the
     directory 'data' using a commonly used directory structure.
     """
-    cfg_file = Path(__file__).parent.parent / "config.yml"
+    project_dir = Path(__file__).parent
+    cfg_file = project_dir / "config.yml"
     with cfg_file.open() as file:
         cfg = yaml.safe_load(file)
 
-    facets_file = Path(__file__).parent / "datasets.yml"
+    facets_file = project_dir / 'esmvaltool_sample_data' / "datasets.yml"
     with facets_file.open() as file:
         cfg_data = yaml.safe_load(file)
 
