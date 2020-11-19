@@ -1,11 +1,40 @@
 # Sample data for use with the ESMValTool
 
 This repository will contain samples of real data for use with the ESMValTool for demonstration purposes and automated testing.
-The goal is to keep the repository size small (~ 100 MB), so it can be easily downloaded.
+The goal is to keep the repository size small (~ 100 MB), so it can be easily downloaded. We strive to include data that adhere well to the CMIP6 standard and can be loaded using simple iris commands.
+
+At present, the repository contains 44 monthly, and 35 daily timeseries datasets. The specifications can be found in [`datasets.yml`](esmvaltool_sample_data/datasets.yml).
+
 
 ## Usage
 
-TODO
+The functionality of this repository is kept simple.
+
+Data can be loaded using the following command for daily or monthly timeseries data.
+
+```python
+import esmvaltool_sample_data
+
+# load monthly timeseries data
+ts_amon_cubes = load_timeseries_cubes(mip_table='Amon')
+
+# load daily timeseries data
+ts_day_cubes = load_timeseries_cubes(mip_table='day')
+```
+
+## config-user.yml
+
+If you want to use this dataset in your ESMValTool projects, add the following lines to your `config-user.yml`:
+
+```yaml
+rootpath:
+  CMIP6: <path_to_repository>/esmvaltool_sample_data/data/timeseries/default_inputpath
+
+drs:
+  CMIP6: default
+```
+
+If you have installed `esmvaltool_sample_data`, you can find the `rootpath` using `python -c 'from esmvaltool_sample_data import base_dir; print(base_dir.parent)'`
 
 ## Updating the test data
 
@@ -24,6 +53,9 @@ Run
 python download_sample_data.py
 ```
 to download a sample of the test data.
+
+`esmvaltool_sample_data/datasets.yml` defines the datasets that will be downloaded. Any datasets that are problematic can be added under `ignore`.
+
 
 ## Licence
 
