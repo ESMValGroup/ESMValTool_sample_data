@@ -1,10 +1,9 @@
-# Sample data for use with the ESMValTool
+# Sample data for use with ESMValTool
 
-This repository will contain samples of real data for use with the ESMValTool for demonstration purposes and automated testing.
-The goal is to keep the repository size small (~ 100 MB), so it can be easily downloaded. We strive to include data that adhere well to the CMIP6 standard and can be loaded using simple iris commands.
+This repository will contain samples of real data for use with [ESMValTool](https://github.com/ESMValGroup/ESMValTool) for demonstration purposes and automated testing.
+The goal is to keep the repository size small (~ 100 MB), so it can be easily downloaded. We strive to include data that adhere well to the CMIP6 standard and can be loaded using simple [iris](https://github.com/SciTools/iris) commands.
 
 At present, the repository contains 44 monthly, and 35 daily timeseries datasets. The specifications can be found in [`datasets.yml`](esmvaltool_sample_data/datasets.yml).
-
 
 ## Usage
 
@@ -44,7 +43,7 @@ conda env create -f environment.yml -n esmvaltool_test_data
 conda activate esmvaltool_test_data
 ```
 
-Copy `config.yml.template` to `config.yml` and customize, at least add your
+Copy [`config.yml.template`](config.yml.template) to `config.yml` and customize, at least add your
 ESGF username and password.
 Create an account on [https://esgf-data.dkrz.de/user/add/](https://esgf-data.dkrz.de/user/add/) if you do not have one.
 
@@ -54,17 +53,17 @@ python download_sample_data.py
 ```
 to download a sample of the test data.
 
-`esmvaltool_sample_data/datasets.yml` defines the datasets that will be downloaded. Any datasets that are problematic can be added under `ignore`.
+[`esmvaltool_sample_data/datasets.yml`](esmvaltool_sample_data/datasets.yml) defines the datasets that will be downloaded. Any datasets that are problematic can be added under `ignore`.
 
 
 ## Licence
 
 This work is dual-licensed under Apache 2.0 and CC-BY-SA 4.0.
-The data (`esmvaltool_sample_data/data/`) are derived from CMIP6,
+All data files in the directory ([`esmvaltool_sample_data/data/`](esmvaltool_sample_data/data/)) are derived from CMIP6,
 and licenced under CC-BY-SA 4.0. The rest of the contents of this work, if
 not specified otherwise, is licenced under Apache 2.0. The terms of the
 Apache 2.0 licence are available in the LICENCE file, and the terms of the
-CC-BY-SA 4.0 licence in the `esmvaltool_sample_data/data/LICENCE` file.
+CC-BY-SA 4.0 licence in the [`esmvaltool_sample_data/data/LICENCE`](esmvaltool_sample_data/data/LICENCE) file.
 
 ## How to contribute
 
