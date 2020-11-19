@@ -38,9 +38,9 @@ The sections below outline the steps in each case.
 
 In case you feel like you've made a valuable contribution, but you don't know how to write or run tests for it, or how to generate the documentation: don't let this discourage you from making the pull request; we can help you! Just go ahead and submit the pull request, but keep in mind that you might be asked to append additional commits to your pull request.
 
-## Code style
+## General guidelines
 
-To increase the readability and maintainability or the ESMValTool and related source code, we aim to adhere to best practices and coding standards. Please have a look at our [code style guidelines][8].
+`ESMValTool_sample_data` is a subproject of ESMValTool. For general documentation about contributing to ESMValTool projects, see the [ESMValTool contributing guidelines][8].
 
 ## Licence
 
@@ -58,5 +58,5 @@ These guidelines were derived from the open-source [template for contribution gu
 [5]: https://help.github.com/articles/syncing-a-fork/
 [6]: https://help.github.com/articles/pushing-commits-to-a-remote-repository
 [7]: https://help.github.com/articles/creating-a-pull-request/
-[8]: https://docs.esmvaltool.org/projects/esmvalcore/en/latest/contributing.html#code-style
+[8]: https://docs.esmvaltool.org/projects/esmvaltool/en/latest/contributing.html
 [9]: https://github.com/NLeSC/python-template/blob/master/CONTRIBUTING.md
