@@ -68,11 +68,12 @@ def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
     Parameters
     ----------
     mip_table: str
-        select monthly (`Amon`) or daily (`day`) data.
+        select monthly (`Amon`, default) or daily (`day`) data.
 
     Returns
     -------
-    list of iris.cube
+    cubes: list
+        list of iris.cube.Cube
     """
 
     timeseries_dir = base_dir / 'data' / 'timeseries'
