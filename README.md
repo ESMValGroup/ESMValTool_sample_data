@@ -14,10 +14,10 @@ Data can be loaded using the following command for daily or monthly timeseries d
 ```python
 import esmvaltool_sample_data
 
-# load monthly timeseries data
+# load monthly air temperature timeseries data
 ts_amon_cubes = load_timeseries_cubes(mip_table='Amon')
 
-# load daily timeseries data
+# load daily air temperature timeseries data
 ts_day_cubes = load_timeseries_cubes(mip_table='day')
 ```
 
@@ -37,9 +37,9 @@ If you have installed `esmvaltool_sample_data`, you can find the `rootpath` usin
 
 ## Licence
 
-This work is dual-licensed under Apache 2.0 and CC-BY-SA 4.0.
-All data files in the directory ([`esmvaltool_sample_data/data/`](esmvaltool_sample_data/data/)) are derived from CMIP6,
-and licenced under CC-BY-SA 4.0. The rest of the contents of this work, if
+This work is licensed under Apache 2.0 (code) and CC-BY-SA 4.0 (data).
+All data files in the directory ([`esmvaltool_sample_data/data/`](esmvaltool_sample_data/data/)) are derived from CMIP6.
+The licensing agreements governing CMIP6 data depend on the model but generally conform to CC-BY-SA 4.0, see the [CMIP6 Terms of Use](https://pcmdi.llnl.gov/CMIP6/TermsOfUse) for more detailed information.
 not specified otherwise, is licenced under Apache 2.0. The terms of the
 Apache 2.0 licence are available in the LICENCE file, and the terms of the
 CC-BY-SA 4.0 licence in the [`esmvaltool_sample_data/data/LICENCE`](esmvaltool_sample_data/data/LICENCE) file.
