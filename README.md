@@ -27,7 +27,7 @@ If you want to use this dataset in your ESMValTool projects, add the following l
 
 ```yaml
 rootpath:
-  CMIP6: <path_to_repository>/esmvaltool_sample_data/data/timeseries/default_inputpath
+  CMIP6: <path_to_repository>/esmvaltool_sample_data/data/timeseries/
 
 drs:
   CMIP6: default
