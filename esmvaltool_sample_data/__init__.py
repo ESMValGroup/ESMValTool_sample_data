@@ -2,16 +2,15 @@ from pathlib import Path
 
 import cf_units
 import iris
-import yaml
 
 base_dir = Path(__file__).parent
 
 VERBOSE = False
 
-with open(base_dir / 'datasets.yml', 'r') as f:
-    config = yaml.safe_load(f)
-
-ignore_list = [fn.replace('.', '/') for fn in config['ignore']]
+# This ignore list is used to help with debugging
+ignore_list = [
+    # 'CMIP6/CMIP/AWI/AWI-ESM-1-1-LR/historical/r1i1p1f1/Amon/ta/gn/v20200212',
+]
 
 
 def strip_attributes(cube: 'iris.Cube') -> None:
