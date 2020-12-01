@@ -11,7 +11,6 @@ This script uses two configuration files:
    defines the datasets to download.
 """
 import datetime
-import os
 import warnings
 from itertools import groupby
 from pathlib import Path
@@ -291,11 +290,13 @@ def sample_files(plot_type, dataset_name, files):
     files : :obj:`list` of :obj:`str`
         A list of filenames that comprise the dataset.
     """
+    project_dir = Path(__file__).parent
+    data_dir = project_dir / 'esmvaltool_sample_data' / 'data' / plot_type
+    data_path = data_dir.joinpath(*dataset_name.split('.'))
+    data_path.mkdir(parents=True, exist_ok=True)
+
     for filename in files:
-        dirpath = (Path(__file__).parent / 'data' / plot_type /
-                   dataset_name.replace('.', os.sep))
-        dirpath.mkdir(parents=True, exist_ok=True)
-        out_file = dirpath / Path(filename).name
+        out_file = data_path / Path(filename).name
         if out_file.exists():
             print("File exists, skipping:", out_file)
         else:
@@ -311,11 +312,12 @@ def main():
     The resulting list of files is then sampled and stored locally in the
     directory 'data' using a commonly used directory structure.
     """
-    cfg_file = Path(__file__).parent.parent / "config.yml"
+    project_dir = Path(__file__).parent
+    cfg_file = project_dir / "config.yml"
     with cfg_file.open() as file:
         cfg = yaml.safe_load(file)
 
-    facets_file = Path(__file__).parent / "datasets.yml"
+    facets_file = project_dir / "datasets.yml"
     with facets_file.open() as file:
         cfg_data = yaml.safe_load(file)
 
