@@ -50,7 +50,6 @@ By contributing, you agree that your contributions will be licensed under the Ap
 
 These guidelines were derived from the open-source [template for contribution guidelines from the Netherlands eScience Center][9] licenced under Apache 2.0.
 
-
 [1]: https://help.github.com/articles/about-pull-requests/
 [2]: https://github.com/ESMValGroup/ESMValTool_sample_data/issues
 [3]: https://help.github.com/articles/autolinked-references-and-urls/#commit-shas
@@ -60,3 +59,24 @@ These guidelines were derived from the open-source [template for contribution gu
 [7]: https://help.github.com/articles/creating-a-pull-request/
 [8]: https://docs.esmvaltool.org/projects/esmvaltool/en/latest/contributing.html
 [9]: https://github.com/NLeSC/python-template/blob/master/CONTRIBUTING.md
+
+
+# Updating the test data
+
+Create and activate conda environment with the required dependencies
+```bash
+conda env create -f environment.yml -n esmvaltool_test_data
+conda activate esmvaltool_test_data
+```
+
+Copy [`config.yml.template`](config.yml.template) to `config.yml` and customize, at least add your
+ESGF username and password.
+Create an account on [https://esgf-data.dkrz.de/user/add/](https://esgf-data.dkrz.de/user/add/) if you do not have one.
+
+Run
+```bash
+python download_sample_data.py
+```
+to download a sample of the test data.
+
+[`esmvaltool_sample_data/datasets.yml`](esmvaltool_sample_data/datasets.yml) defines the datasets that will be downloaded. Any datasets that are problematic can be added under `ignore`.
