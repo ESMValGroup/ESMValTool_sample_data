@@ -12,6 +12,7 @@ This script uses two configuration files:
 """
 import datetime
 import warnings
+from itertools import groupby
 from pathlib import Path
 
 import iris
@@ -107,6 +108,34 @@ def select_host(hosts, preferred_hosts, ignore_hosts):
     return hosts[0]
 
 
+def select_latest_versions(datasets: dict) -> dict:
+    """Return a dict with only the latest version of each dataset.
+
+    Parameters
+    ----------
+    datasets : dict
+        A dict with dataset objects
+
+    Returns
+    -------
+    most_recent_datasets : dict
+        A dict containing only the most recent version of each dataset object,
+        in case multiple versions have been passed.
+    """
+    keys = (key.rsplit('.', 1) for key in datasets)
+    keys = sorted(keys)
+    grouped = groupby(keys, key=lambda key: key[0])
+
+    most_recent_keys = (list(versions)[-1] for group, versions in grouped)
+    most_recent_datasets = {}
+
+    for name, version in most_recent_keys:
+        key = f'{name}.{version}'
+        most_recent_datasets[key] = datasets[key]
+
+    return most_recent_datasets
+
+
 def search(connection, preferred_hosts, ignore_hosts, facets):
     """Search for files on ESGF.
 
@@ -139,7 +168,11 @@ def search(connection, preferred_hosts, ignore_hosts, facets):
             datasets[dataset_name] = {}
         datasets[dataset_name][host] = dataset
 
-    print("Found", len(datasets), "unique datasets")
+    # For some datasets, multiple versions are returned
+    # https://github.com/ESMValGroup/ESMValTool_sample_data/issues/5
+    datasets = select_latest_versions(datasets)
+
+    print(f"Found {len(datasets)} datasets (only the latest versions)")
 
     # Select host and find files on host
     files = {}
