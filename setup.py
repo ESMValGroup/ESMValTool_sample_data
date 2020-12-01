@@ -36,7 +36,6 @@ setup(
         'Topic :: Scientific/Engineering :: Hydrology',
         'Topic :: Scientific/Engineering :: Physics',
     ],
-    test_suite='tests',
     install_requires=[
         'scitools-iris>=2.2',
     ],
