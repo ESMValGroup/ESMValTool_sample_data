@@ -40,9 +40,7 @@ If you have installed `esmvaltool_sample_data`, you can find the `rootpath` usin
 This work is licensed under Apache 2.0 (code) and CC-BY-SA 4.0 (data).
 All data files in the directory ([`esmvaltool_sample_data/data/`](esmvaltool_sample_data/data/)) are derived from CMIP6.
 The licensing agreements governing CMIP6 data depend on the model but generally conform to CC-BY-SA 4.0, see the [CMIP6 Terms of Use](https://pcmdi.llnl.gov/CMIP6/TermsOfUse) for more detailed information.
-not specified otherwise, is licenced under Apache 2.0. The terms of the
-Apache 2.0 licence are available in the LICENCE file, and the terms of the
-CC-BY-SA 4.0 licence in the [`esmvaltool_sample_data/data/LICENCE`](esmvaltool_sample_data/data/LICENCE) file.
+The terms of the Apache 2.0 licence are available in the LICENCE file, and the terms of the CC-BY-SA 4.0 licence in the [`esmvaltool_sample_data/data/LICENCE`](esmvaltool_sample_data/data/LICENCE) file.
 
 ## How to contribute
 
