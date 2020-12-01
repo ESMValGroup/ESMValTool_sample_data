@@ -284,7 +284,7 @@ def main():
     with cfg_file.open() as file:
         cfg = yaml.safe_load(file)
 
-    facets_file = project_dir / 'esmvaltool_sample_data' / "datasets.yml"
+    facets_file = project_dir / "datasets.yml"
     with facets_file.open() as file:
         cfg_data = yaml.safe_load(file)
 
