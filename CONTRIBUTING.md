@@ -16,6 +16,6 @@ Create an account on https://esgf-data.dkrz.de/user/add/ if you do not have one.
 
 Run
 ```bash
-python esmvaltool_sample_data/sample_data.py
+python download_sample_data.py
 ```
 to download a sample of the test data.
