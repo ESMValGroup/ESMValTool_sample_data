@@ -1,7 +1,7 @@
 # Sample data for use with ESMValTool
 
-This repository will contain samples of real data for use with [ESMValTool](https://github.com/ESMValGroup/ESMValTool) for demonstration purposes and automated testing.
-The goal is to keep the repository size small (~ 100 MB), so it can be easily downloaded. We strive to include data that adhere well to the CMIP6 standard and can be loaded using simple [iris](https://github.com/SciTools/iris) commands.
+This repository will contain samples of real data for use with [ESMValTool](https://github.com/ESMValGroup/ESMValTool) for automated testing and possibly for demonstration purposes.
+The goal is to keep the repository size small (~ 100 MB), so it can be easily downloaded. We strive to include data that adheres well to the CMIP6 standard and can be loaded using simple [iris](https://github.com/SciTools/iris) commands.
 
 At present, the repository contains 44 monthly, and 35 daily timeseries datasets. The specifications can be found in [`datasets.yml`](esmvaltool_sample_data/datasets.yml).
 
