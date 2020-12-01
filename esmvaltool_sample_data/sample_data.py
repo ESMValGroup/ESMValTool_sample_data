@@ -115,11 +115,11 @@ def select_latest_versions(datasets: dict) -> dict:
     If `datasets` contains multiple versions of a dataset, return only
     the most recent version.
     """
-    keys = (key.rsplit('.', 1) for key in list(datasets.keys()))
+    keys = (key.rsplit('.', 1) for key in datasets)
     keys = sorted(keys)
     grouped = groupby(keys, key=lambda key: key[0])
 
-    most_recent_keys = (list(grouper)[-1] for group, grouper in grouped)
+    most_recent_keys = (list(versions)[-1] for group, versions in grouped)
     most_recent_datasets = {}
 
     for name, version in most_recent_keys:
@@ -161,7 +161,7 @@ def search(connection, preferred_hosts, ignore_hosts, facets):
             datasets[dataset_name] = {}
         datasets[dataset_name][host] = dataset
 
-    print(f"Found {len(datasets)} datasets")
+    print(f"Found {len(datasets)} datasets when using only the latest versions")
 
     # For some datasets, multiple versions are returned
     # https://github.com/ESMValGroup/ESMValTool_sample_data/issues/5
