@@ -6,7 +6,7 @@ A contribution can be one of the following cases:
 
 1. you have a question;
 2. you think you may have found a bug (including unexpected behavior);
-3. you want to make some kind of change to the code base (e.g. to fix a bug, to add a new feature, to update documentation).
+3. you want to make a change to the code (e.g. to fix a bug, to add a new feature, to update documentation).
 
 The sections below outline the steps in each case.
 
@@ -14,7 +14,7 @@ The sections below outline the steps in each case.
 
 1. use the search functionality [here][2] to see if someone already filed the same issue;
 2. if your issue search did not yield any relevant results, make a new issue;
-3. apply the "Question" label; apply other labels when relevant.
+3. apply the "question" label; apply other labels when relevant if you can.
 
 ## You think you may have found a bug
 
@@ -22,7 +22,7 @@ The sections below outline the steps in each case.
 2. if your issue search did not yield any relevant results, make a new issue, making sure to provide enough information to the rest of the community to understand the cause and context of the problem. Depending on the issue, you may want to include:
     - some identifying information (name and version number) for dependencies you're using;
     - information about the operating system;
-3. apply relevant labels to the newly created issue.
+3. apply relevant labels to the newly created issue if you can.
 
 ## You want to make a change to the code
 
@@ -56,7 +56,7 @@ These guidelines were derived from the open-source [template for contribution gu
 [5]: https://help.github.com/articles/syncing-a-fork/
 [6]: https://help.github.com/articles/pushing-commits-to-a-remote-repository
 [7]: https://help.github.com/articles/creating-a-pull-request/
-[8]: https://docs.esmvaltool.org/projects/esmvaltool/en/latest/contributing.html
+[8]: https://docs.esmvaltool.org/en/latest/community/index.html
 [9]: https://github.com/NLeSC/python-template/blob/master/CONTRIBUTING.md
 
 
@@ -78,4 +78,4 @@ python download_sample_data.py
 ```
 to download a sample of the test data.
 
-[`esmvaltool_sample_data/datasets.yml`](esmvaltool_sample_data/datasets.yml) defines the datasets that will be downloaded. Any datasets that are problematic can be added under `ignore`.
+[`datasets.yml`](datasets.yml) defines the datasets that will be downloaded. Any datasets that are problematic can be added under `ignore`.
