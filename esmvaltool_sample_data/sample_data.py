@@ -112,8 +112,16 @@ def select_host(hosts, preferred_hosts, ignore_hosts):
 def select_latest_versions(datasets: dict) -> dict:
     """Return a dict with only the latest version of each dataset.
 
-    If `datasets` contains multiple versions of a dataset, return only
-    the most recent version.
+    Parameters
+    ----------
+    datasets : dict
+        A dict with dataset objects
+
+    Returns
+    -------
+    most_recent_datasets : dict
+        A dict containing only the most recent version of each dataset object,
+        in case multiple versions have been passed.
     """
     keys = (key.rsplit('.', 1) for key in datasets)
     keys = sorted(keys)
@@ -161,13 +169,11 @@ def search(connection, preferred_hosts, ignore_hosts, facets):
             datasets[dataset_name] = {}
         datasets[dataset_name][host] = dataset
 
-    print(f"Found {len(datasets)} datasets when using only the latest versions")
-
     # For some datasets, multiple versions are returned
     # https://github.com/ESMValGroup/ESMValTool_sample_data/issues/5
     datasets = select_latest_versions(datasets)
 
-    print(f"Found {len(datasets)} unique datasets (filtered latest version)")
+    print(f"Found {len(datasets)} datasets (only the latest versions)")
 
     # Select host and find files on host
     files = {}
