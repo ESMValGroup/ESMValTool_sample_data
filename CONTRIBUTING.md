@@ -41,13 +41,13 @@ In case you feel like you've made a valuable contribution, but you don't know ho
 
 `ESMValTool_sample_data` is a subproject of ESMValTool. For general documentation about contributing to ESMValTool projects, see the [ESMValTool contributing guidelines][8].
 
-## Licence
+## License
 
-By contributing, you agree that your contributions will be licensed under the Apache 2.0 licence.
+By contributing, you agree that your contributions will be licensed under the Apache 2.0 license.
 
 ## Attribution
 
-These guidelines were derived from the open-source [template for contribution guidelines from the Netherlands eScience Center][9] licenced under Apache 2.0.
+These guidelines were derived from the open-source [template for contribution guidelines from the Netherlands eScience Center][9] licensed under Apache 2.0.
 
 [1]: https://help.github.com/articles/about-pull-requests/
 [2]: https://github.com/ESMValGroup/ESMValTool_sample_data/issues
