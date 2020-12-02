@@ -74,6 +74,8 @@ def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
     cubes: list
         list of iris.cube.Cube
     """
+    if mip_table not in ('amon', 'day'):
+        raise ValueError(f'Invalid `mip_table`: {repr(mip_table)}')
 
     timeseries_dir = base_dir / 'data' / 'timeseries'
 
