@@ -27,13 +27,14 @@ If you want to use this dataset in your ESMValTool projects, add the following l
 
 ```yaml
 rootpath:
-  CMIP6: <path_to_repository>/esmvaltool_sample_data/data/timeseries/
+  CMIP6:
+  - <path_to_repository>/esmvaltool_sample_data/data/timeseries/CMIP6
 
 drs:
   CMIP6: default
 ```
 
-If you have installed `esmvaltool_sample_data`, you can find the `rootpath` using `python -c 'from esmvaltool_sample_data import base_dir; print(base_dir.parent)'`
+If you have installed `esmvaltool_sample_data`, you can find the `rootpath` using `python -c 'import esmvaltool_sample_data, yaml; print(yaml.dump(esmvaltool_sample_data.get_rootpaths()))'`
 
 ## License
 
