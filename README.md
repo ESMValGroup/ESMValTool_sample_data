@@ -5,6 +5,8 @@ The goal is to keep the repository size small (~ 100 MB), so it can be easily do
 
 At present, the repository contains 44 monthly, and 35 daily timeseries datasets. The specifications can be found in [`datasets.yml`](esmvaltool_sample_data/datasets.yml).
 
+The data are stored using the data reference syntax structure from DKRZ.
+
 ## Usage
 
 The functionality of this repository is kept simple.
@@ -27,13 +29,14 @@ If you want to use this dataset in your ESMValTool projects, add the following l
 
 ```yaml
 rootpath:
-  CMIP6: <path_to_repository>/esmvaltool_sample_data/data/timeseries/
+  CMIP6:
+    - <path_to_repository>/esmvaltool_sample_data/data/timeseries/CMIP6
 
 drs:
-  CMIP6: default
+  CMIP6: DKRZ
 ```
 
-If you have installed `esmvaltool_sample_data`, you can find the `rootpath` using `python -c 'from esmvaltool_sample_data import base_dir; print(base_dir.parent)'`
+If you have installed `esmvaltool_sample_data`, you can find the `rootpath` settings using `python -c 'import esmvaltool_sample_data, yaml; print(yaml.dump(esmvaltool_sample_data.get_rootpaths()))'`
 
 ## License
 

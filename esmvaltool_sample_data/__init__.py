@@ -7,7 +7,9 @@ base_dir = Path(__file__).parent
 
 VERBOSE = False
 
-# This ignore list is used to help with debugging
+# This ignore list is used to help with debugging only
+# for a more permanent solution, add
+# problematic datasets the `ignore` section in `../datasets.yml`.
 ignore_list = [
     # 'CMIP6/CMIP/AWI/AWI-ESM-1-1-LR/historical/r1i1p1f1/Amon/ta/gn/v20200212',
 ]
@@ -50,6 +52,7 @@ def load_cubes_from_input_dirs(input_dirs: list) -> 'iris.Cube':
 
 
 def filter_ignored_datasets(dirs, root):
+    """Filter datasets defined in the global `ignore` list."""
     for drc in dirs:
         test_drc = str(drc.relative_to(root))
         if test_drc not in ignore_list:
@@ -85,6 +88,22 @@ def load_timeseries_cubes(mip_table: str = 'Amon') -> list:
     cubes = load_cubes_from_input_dirs(input_dirs)
 
     return list(cubes)
+
+
+def get_rootpaths() -> dict:
+    """Return a dict with rootpaths to update the user config in ESMValTool."""
+    rootpath = {
+        'rootpath': {
+            'CMIP6': [
+                str(base_dir / 'data' / 'timeseries' / 'CMIP6'),
+            ]
+        },
+        'drs': {
+            'CMIP6': 'default',
+        },
+    }
+
+    return rootpath
 
 
 if __name__ == '__main__':
