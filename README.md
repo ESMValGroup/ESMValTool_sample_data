@@ -34,7 +34,7 @@ drs:
   CMIP6: default
 ```
 
-If you have installed `esmvaltool_sample_data`, you can find the `rootpath` using `python -c 'import esmvaltool_sample_data, yaml; print(yaml.dump(esmvaltool_sample_data.get_rootpaths()))'`
+If you have installed `esmvaltool_sample_data`, you can find the `rootpath` settings using `python -c 'import esmvaltool_sample_data, yaml; print(yaml.dump(esmvaltool_sample_data.get_rootpaths()))'`
 
 ## License
 
