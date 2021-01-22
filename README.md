@@ -11,13 +11,13 @@ The data are stored using the data reference syntax structure from DKRZ.
 
 The functionality of this repository is kept simple.
 
-After installing the package using
+After installing [iris](https://scitools-iris.readthedocs.io/en/latest/installing.html), this package can be installed with the command:
 
 ```bash
 pip install ESMValTool_sample_data@git+https://github.com/ESMValGroup/ESMValTool_sample_data
 ```
 
-data can be loaded using the following command for daily or monthly timeseries data.
+Data can be loaded using the following command for daily or monthly timeseries data.
 
 ```python
 import esmvaltool_sample_data
