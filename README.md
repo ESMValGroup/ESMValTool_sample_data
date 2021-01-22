@@ -11,7 +11,13 @@ The data are stored using the data reference syntax structure from DKRZ.
 
 The functionality of this repository is kept simple.
 
-Data can be loaded using the following command for daily or monthly timeseries data.
+After installing the package using
+
+```bash
+pip install ESMValTool_sample_data@git+https://github.com/ESMValGroup/ESMValTool_sample_data
+```
+
+data can be loaded using the following command for daily or monthly timeseries data.
 
 ```python
 import esmvaltool_sample_data
