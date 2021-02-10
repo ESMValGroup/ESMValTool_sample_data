@@ -9,7 +9,7 @@ PACKAGES = [
 
 setup(
     name='ESMValTool_sample_data',
-    version='0.0.4',
+    version='0.0.3',
     description="ESMValTool sample data",
     long_description=readme,
     long_description_content_type='text/markdown',
