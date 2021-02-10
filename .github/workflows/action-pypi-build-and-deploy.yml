@@ -6,7 +6,7 @@ on:
   # use this for testing
   push:
     branches:
-      - deploy_pypi
+      - master
 
 jobs:
   build-n-publish:
