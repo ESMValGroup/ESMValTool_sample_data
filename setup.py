@@ -8,10 +8,11 @@ PACKAGES = [
 ]
 
 setup(
-    name='ESMValTool sample data',
+    name='ESMValTool_sample_data',
     version='0.0.3',
     description="ESMValTool sample data",
-    long_description=readme + '\n\n',
+    long_description=readme,
+    long_description_content_type='text/markdown',
     author="Stef Smeets, Bouwe Andela",
     url='https://github.com/ESMValGroup/ESMValTool_sample_data',
     packages=PACKAGES,
@@ -24,7 +25,7 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
-        'License :: Other/Proprietary License'
+        'License :: Other/Proprietary License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
