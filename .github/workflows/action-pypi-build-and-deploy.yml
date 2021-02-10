@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-n-publish:
-    name: Build and publish ESMValCore on PyPi
+    name: Build and publish ESMValTool_sample_data on PyPi
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
