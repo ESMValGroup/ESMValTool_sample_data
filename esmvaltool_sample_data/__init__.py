@@ -46,7 +46,8 @@ def load_cubes_from_input_dirs(input_dirs: list) -> 'iris.Cube':
         cube = cubes.concatenate_cube()
 
         if VERBOSE:
-            print('           ', cube.shape, cube.coord('time').units.calendar)
+            print(f'    {cube.shape=} {cube.data.min()=} {cube.data.max()=}')
+            print(f'    {cube.coord("time").units.calendar=}')
 
         yield cube
 
@@ -119,7 +120,8 @@ if __name__ == '__main__':
 
         first_cube = ts[0]
         for i, cube in enumerate(ts):
-            print(i)
             cube.regrid(grid=first_cube, scheme=iris.analysis.Linear())
 
-    # breakpoint()
+            print(i, cube.data.min(), cube.data.max())
+
+        # breakpoint()
