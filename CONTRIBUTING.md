@@ -28,7 +28,7 @@ The sections below outline the steps in each case.
 
 1. (**important**) announce your plan to the rest of the community _before you start working_. This announcement should be in the form of a (new) issue [here][2];
 2. (**important**) wait until some kind of consensus is reached about your idea being a good idea;
-3. if needed, create your own feature branch off of the latest master commit. While working on your feature branch, make sure to stay up to date with the master branch by pulling in changes, possibly from the 'upstream' repository (follow the instructions [here][4] and [here][5]);
+3. if needed, create your own feature branch off of the latest main branch. While working on your feature branch, make sure to stay up to date with the main branch by pulling in changes, possibly from the 'upstream' repository (follow the instructions [here][4] and [here][5]);
 <!-- 4. make sure the existing tests still work by running ``python setup.py test``; -->
 <!-- 5. add your own tests (if necessary); -->
 6. update or expand the documentation;
