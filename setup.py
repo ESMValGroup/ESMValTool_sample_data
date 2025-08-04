@@ -18,6 +18,7 @@ setup(
     packages=PACKAGES,
     include_package_data=True,
     license="Apache 2.0; CC BY-SA 4.0",
+    license_files=("LICENSE",),
     zip_safe=False,
     keywords='ESMValTool',
     classifiers=[
