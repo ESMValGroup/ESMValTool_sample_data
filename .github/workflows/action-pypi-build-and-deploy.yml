@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - modernize_package
 
 jobs:
   build-n-publish:
