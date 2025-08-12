@@ -38,7 +38,7 @@ jobs:
       - run: conda list
       - run: pip install -e .
       - run: conda list
-      - run: pytest -n 2
+      - run: pytest
 
   osx:
     runs-on: "macos-latest"
@@ -66,4 +66,4 @@ jobs:
       - run: conda list
       - run: pip install -e .
       - run: conda list
-      - run: pytest -n 2
+      - run: pytest
