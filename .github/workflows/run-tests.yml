@@ -1,0 +1,68 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'  # nightly
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool_sample_data'  # avoid GAs in forks
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+      fail-fast: false
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: esmvaltool_test_data
+          environment-file: environment.yml
+          python-version: ${{ matrix.python-version }}
+          miniforge-version: "latest"
+          use-mamba: true
+      - run: conda -V
+      - run: python -V
+      - run: conda list
+      - run: pip install -e .
+      - run: conda list
+      - run: pytest
+
+  osx:
+    runs-on: "macos-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool_sample_data'  # avoid GAs in forks
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        architecture: ["x64"]  # need to force Intel, arm64 builds have issues
+      fail-fast: false
+    name: OSX Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          architecture: ${{ matrix.architecture }}
+          activate-environment: esmvaltool_test_data
+          environment-file: environment.yml
+          python-version: ${{ matrix.python-version }}
+          miniforge-version: "latest"
+          use-mamba: true
+      - run: conda -V
+      - run: python -V 
+      - run: conda list
+      - run: pip install -e .
+      - run: conda list
+      - run: pytest
